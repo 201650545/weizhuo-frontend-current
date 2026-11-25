@@ -1,0 +1,192 @@
+[
+  {
+    "title": "死寂",
+    "file": "死寂.m4a",
+    "group": "A 静水",
+    "durationLabel": "2:54",
+    "duration": 174.719229,
+    "emotion": "阴森·压抑",
+    "tempo": "慢",
+    "mood": "惊悚压迫"
+  },
+  {
+    "title": "shiver",
+    "file": "shiver.m4a",
+    "group": "B 暗涌",
+    "durationLabel": "2:42",
+    "duration": 162.423583,
+    "emotion": "战栗·不安",
+    "tempo": "中",
+    "mood": "惊悚压迫"
+  },
+  {
+    "title": "pendulum",
+    "file": "pendulum.m4a",
+    "group": "B 暗涌",
+    "durationLabel": "2:44",
+    "duration": 164.908299,
+    "emotion": "诡谲·紧张",
+    "tempo": "中",
+    "mood": "惊悚压迫"
+  },
+  {
+    "title": "the grotto",
+    "file": "the grotto.m4a",
+    "group": "C 怪诞",
+    "durationLabel": "2:18",
+    "duration": 138.04,
+    "emotion": "猎奇·洗脑",
+    "tempo": "中",
+    "mood": "诡异怪诞"
+  },
+  {
+    "title": "salvatore",
+    "file": "salvatore.m4a",
+    "group": "A 静水",
+    "durationLabel": "4:41",
+    "duration": 281.193741,
+    "emotion": "忧郁·迷离",
+    "tempo": "慢",
+    "mood": "忧郁怀旧"
+  },
+  {
+    "title": "holyghost",
+    "file": "holyghost.m4a",
+    "group": "B 暗涌",
+    "durationLabel": "2:53",
+    "duration": 173.267619,
+    "emotion": "诡秘·冷峻",
+    "tempo": "中",
+    "mood": "诡异怪诞"
+  },
+  {
+    "title": "鬼新娘",
+    "file": "鬼新娘.m4a",
+    "group": "D 压迫",
+    "durationLabel": "3:10",
+    "duration": 190.218231,
+    "emotion": "凄怨·惊悚",
+    "tempo": "慢",
+    "mood": "惊悚压迫"
+  },
+  {
+    "title": "O Come O Come Emmanuel",
+    "file": "O Come O Come Emmanuel.m4a",
+    "group": "C 怪诞",
+    "durationLabel": "3:13",
+    "duration": 193.11,
+    "emotion": "仪式·圣咏",
+    "tempo": "慢",
+    "mood": "诡异怪诞"
+  },
+  {
+    "title": "NOP",
+    "file": "NOP.m4a",
+    "group": "F 怀旧",
+    "durationLabel": "1:41",
+    "duration": 101.819297,
+    "emotion": "怀旧·温暖",
+    "tempo": "慢",
+    "mood": "梦幻怀旧"
+  },
+  {
+    "title": "time machine",
+    "file": "time machine.m4a",
+    "group": "E 伤感",
+    "durationLabel": "3:45",
+    "duration": 225.514667,
+    "emotion": "时光·感伤",
+    "tempo": "慢",
+    "mood": "梦幻怀旧"
+  },
+  {
+    "title": "Are you lost",
+    "file": "Are you lost.m4a",
+    "group": "A 静水",
+    "durationLabel": "2:47",
+    "duration": 167.903288,
+    "emotion": "迷茫·孤独",
+    "tempo": "慢",
+    "mood": "忧郁怀旧"
+  },
+  {
+    "title": "hi",
+    "file": "hi.m4a",
+    "group": "C 怪诞",
+    "durationLabel": "1:07",
+    "duration": 67.175238,
+    "emotion": "怪诞·戏谑",
+    "tempo": "中",
+    "mood": "诡异怪诞"
+  },
+  {
+    "title": "old doll",
+    "file": "old doll.m4a",
+    "group": "C 怪诞",
+    "durationLabel": "1:39",
+    "duration": 99.52093,
+    "emotion": "诡异·阴冷",
+    "tempo": "慢",
+    "mood": "诡异怪诞"
+  },
+  {
+    "title": "扭曲的梦境",
+    "file": "扭曲的梦境.m4a",
+    "group": "D 压迫",
+    "durationLabel": "41:25",
+    "duration": 2485.556825,
+    "emotion": "迷幻·失真",
+    "tempo": "慢",
+    "mood": "梦幻怀旧"
+  },
+  {
+    "title": "Fallen Down",
+    "file": "Fallen Down.m4a",
+    "group": "E 伤感",
+    "durationLabel": "3:34",
+    "duration": 214.111202,
+    "emotion": "治愈·忧伤",
+    "tempo": "慢",
+    "mood": "忧郁怀旧"
+  },
+  {
+    "title": "six fourty seven",
+    "file": "six fourty seven.m4a",
+    "group": "F 怀旧",
+    "durationLabel": "2:00",
+    "duration": 120.952744,
+    "emotion": "慵懒·梦幻",
+    "tempo": "慢",
+    "mood": "梦幻怀旧"
+  },
+  {
+    "title": "沼に沈む",
+    "file": "沼に沈む.m4a",
+    "group": "A 静水",
+    "durationLabel": "1:28",
+    "duration": 88.8,
+    "emotion": "阴湿·下沉",
+    "tempo": "无拍",
+    "mood": "惊悚压迫"
+  },
+  {
+    "title": "少女のうた",
+    "file": "少女のうた.m4a",
+    "group": "E 伤感",
+    "durationLabel": "3:19",
+    "duration": 199.2,
+    "emotion": "凄美·哀怨",
+    "tempo": "慢",
+    "mood": "忧郁怀旧"
+  },
+  {
+    "title": "沙子 a long story",
+    "file": "沙子 a long story.m4a",
+    "group": "A 静水",
+    "durationLabel": "2:25",
+    "duration": 145.9,
+    "emotion": "荒芜·压抑",
+    "tempo": "无拍",
+    "mood": "惊悚压迫"
+  }
+]

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>围桌 · CSS 纵深通道（对照）</title>
+<style>
+:root{
+  --gold:#d8b25f;
+  --sans:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  --serif:"Noto Serif SC","Songti SC","STSong",serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#030305;overflow:hidden;font-family:var(--sans)}
+/* 舞台：透视放在这一层，相机位移放在 .scene，两层分开才不会互相干扰 */
+.stage{
+  position:relative;height:100%;overflow:hidden;
+  perspective:1000px;perspective-origin:50% 46%;
+  background:radial-gradient(ellipse 90% 70% at 50% 44%,#181523 0%,#0b0a11 55%,#030305 100%);
+  touch-action:none;cursor:grab;
+}
+.stage.is-dragging{cursor:grabbing}
+.scene{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+
+/* 地面：本地 Y 轴经 rotateX(90°) 变成世界 Z 轴，所以横条纹在屏幕上就是往远处收的木地板 */
+.floor{
+  position:absolute;left:50%;top:46%;width:2600px;height:4200px;
+  margin:-2100px 0 0 -1300px;
+  transform:translate3d(0,250px,-1600px) rotateX(90deg);
+  background:
+    radial-gradient(ellipse 52% 40% at 50% 46%,rgba(255,198,124,.34),rgba(255,168,92,.12) 46%,transparent 74%),
+    repeating-linear-gradient(0deg,rgba(216,178,95,.16) 0 2px,transparent 2px 300px),
+    repeating-linear-gradient(90deg,rgba(216,178,95,.10) 0 1px,transparent 1px 150px),
+    linear-gradient(#100d16,#050407);
+}
+/* 两侧墙：只在边缘给一点过道感，不做环，避免出现靶盘那种规整感 */
+.wall{
+  position:absolute;left:50%;top:46%;width:4200px;height:1200px;
+  margin:-600px 0 0 -2100px;
+  background:
+    repeating-linear-gradient(90deg,rgba(216,178,95,.055) 0 2px,transparent 2px 420px),
+    linear-gradient(180deg,#08070d,#15121e 55%,#08070d);
+}
+.wall.l{transform:translate3d(-540px,0,-1600px) rotateY(90deg)}
+.wall.r{transform:translate3d(540px,0,-1600px) rotateY(90deg)}
+
+/* 六本书：透视缩放由 perspective 自动完成，这里只给位移 */
+.book{
+  position:absolute;left:50%;top:46%;width:185px;height:278px;margin:-139px 0 0 -92px;
+  border-radius:4px;overflow:hidden;background:#0c0b12;
+  box-shadow:0 20px 46px rgba(0,0,0,.82);
+  transform-style:preserve-3d;will-change:transform,opacity;
+}
+.book img{display:block;width:100%;height:100%;object-fit:cover}
+.book b{
+  position:absolute;left:0;right:0;bottom:0;padding:26px 10px 9px;
+  font-family:var(--serif);font-size:12px;font-weight:400;letter-spacing:.16em;color:#f0e7d6;
+  text-align:center;background:linear-gradient(transparent,rgba(4,3,7,.92));
+  text-shadow:0 1px 6px rgba(0,0,0,.9);
+}
+
+/* 灯下的光柱与暗角：放在舞台层，不参与 3D，也不会被前景挡住 */
+.shaft{
+  position:absolute;inset:0 0 auto;height:82%;pointer-events:none;
+  background:radial-gradient(ellipse 46% 70% at 50% -10%,rgba(255,214,150,.20),rgba(255,182,104,.05) 58%,transparent 84%);
+  mix-blend-mode:screen;
+}
+/* 地平线：和 canvas 版同一个高度，走廊是否成立主要靠它 */
+.horizon{
+  position:absolute;left:0;right:0;top:46%;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(216,178,95,.28) 22%,rgba(216,178,95,.34) 50%,rgba(216,178,95,.28) 78%,transparent);
+}
+/* 颗粒：压掉大渐变在手机上的色带（这条是之前光效返工踩出来的） */
+.grain{
+  position:absolute;inset:0;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.mote{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(255,236,200,.75);pointer-events:none;animation:mote 9s linear infinite}
+.motes{position:absolute;inset:0;pointer-events:none}
+@keyframes mote{0%{transform:translate3d(0,0,0);opacity:0}18%{opacity:.7}100%{transform:translate3d(0,-70px,0);opacity:0}}
+.vignette{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%,transparent 32%,rgba(0,0,0,.82) 100%);
+}
+.badge{
+  position:absolute;left:12px;top:12px;font-size:10px;letter-spacing:.18em;
+  color:rgba(255,255,255,.42);pointer-events:none;
+}
+.hud{
+  position:absolute;left:0;right:0;bottom:0;z-index:3;
+  display:flex;align-items:center;gap:10px;padding:14px 14px 16px;
+  background:linear-gradient(transparent,rgba(0,0,0,.72));
+  color:#bdb6a8;font-size:11px;letter-spacing:.06em;
+}
+.track{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--gold)}
+.hud button{
+  border:1px solid rgba(216,178,95,.34);background:rgba(216,178,95,.1);color:var(--gold);
+  font:inherit;font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;
+}
+.hud output{font-variant-numeric:tabular-nums;min-width:74px;text-align:right;color:rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="scene" id="scene">
+    <div class="wall l"></div>
+    <div class="wall r"></div>
+    <div class="floor"></div>
+  </div>
+  <div class="shaft"></div>
+  <div class="horizon"></div>
+  <div class="motes" id="motes"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+  <p class="badge">CSS · 无 WebGL</p>
+  <div class="hud">
+    <button id="reset" type="button">回到起点</button>
+    <div class="track"><i id="bar"></i></div>
+    <output id="readout">0 fps</output>
+  </div>
+</div>
+<script>
+/* 纯 CSS 3D 版纵深通道：JS 只负责一个进度值，并且只写 transform / opacity，不做任何绘制。
+   对照点：同样的六本书、同样的暖光，换掉的是渲染方式与性能开销。 */
+const BOOKS = [
+  ['./covers/rings.jpg', '年轮'],
+  ['./covers/rainy.jpg', '雨夜旧馆'],
+  ['./covers/fog.jpg', '雾港来信'],
+  ['./covers/lamp.jpg', '第七夜灯'],
+  ['./covers/bride.jpg', '河神娶亲'],
+  ['./covers/summer.jpg', '长夏未寄'],
+]
+const GAP = 460
+const Z0 = 420
+/* 终点停在最后一本前面，而不是穿过去留下一条空走廊 */
+const TRAVEL = Z0 + (BOOKS.length - 1) * GAP - 260
+
+const stage = document.getElementById('stage')
+const scene = document.getElementById('scene')
+const bar = document.getElementById('bar')
+const readout = document.getElementById('readout')
+
+/* 书都挂在 .scene 里，跟着相机一起走；层内只改各自的 z */
+const books = BOOKS.map(([file, title], i) => {
+  const el = document.createElement('div')
+  el.className = 'book'
+  el.style.transform = `translate3d(${(i % 2 ? 1 : -1) * 112}px,${i % 2 ? -14 : 14}px,${-(Z0 + i * GAP)}px)`
+  const img = new Image()
+  img.src = encodeURI(file)
+  img.alt = ''
+  const label = document.createElement('b')
+  label.textContent = title
+  el.append(img, label)
+  scene.appendChild(el)
+  return { el, z: Z0 + i * GAP }
+})
+
+const clamp01 = v => Math.max(0, Math.min(1, v))
+const ease = k => k * k * (3 - 2 * k)
+
+/* 浮尘：纯 CSS 动画，位置只算一次 */
+const motes = document.getElementById('motes')
+for (let i = 0; i < 26; i += 1) {
+  const dot = document.createElement('i')
+  dot.className = 'mote'
+  dot.style.left = (12 + Math.random() * 76).toFixed(1) + '%'
+  dot.style.top = (30 + Math.random() * 62).toFixed(1) + '%'
+  dot.style.opacity = (.25 + Math.random() * .6).toFixed(2)
+  dot.style.animationDelay = (-Math.random() * 9).toFixed(1) + 's'
+  dot.style.animationDuration = (7 + Math.random() * 5).toFixed(1) + 's'
+  motes.appendChild(dot)
+}
+
+let target = 0
+let shown = 0
+/* ?p=0~1 直接定格到某个进度，方便截图和逐段验收 */
+const startP = Number(new URLSearchParams(location.search).get('p'))
+if (startP > 0) target = shown = clamp01(startP)
+let lastInput = -1e9
+let dragging = false
+let dragY = 0
+let dragFrom = 0
+
+function progressFromPointer(event) {
+  return clamp01(dragFrom + (dragY - event.clientY) / 1200)
+}
+stage.addEventListener('pointerdown', event => {
+  dragging = true
+  dragY = event.clientY
+  dragFrom = target
+  lastInput = performance.now()
+  stage.classList.add('is-dragging')
+  stage.setPointerCapture(event.pointerId)
+})
+stage.addEventListener('pointermove', event => {
+  if (!dragging) return
+  target = progressFromPointer(event)
+  lastInput = performance.now()
+})
+const endDrag = () => {
+  dragging = false
+  stage.classList.remove('is-dragging')
+  lastInput = performance.now()
+}
+stage.addEventListener('pointerup', endDrag)
+stage.addEventListener('pointercancel', endDrag)
+stage.addEventListener('wheel', event => {
+  target = clamp01(target + event.deltaY / 2600)
+  lastInput = performance.now()
+}, { passive: true })
+document.getElementById('reset').addEventListener('click', () => {
+  target = 0
+  lastInput = performance.now()
+})
+
+/* 帧循环：缓动推进 → 相机位移 → 每本书按距离给透明度 */
+let frames = 0
+let fpsAt = performance.now()
+function tick(now) {
+  requestAnimationFrame(tick)
+  if (!dragging && now - lastInput > 2200) target = clamp01(target + .0009)
+  shown += (target - shown) * .085
+  scene.style.transform = `translate3d(0,0,${(ease(shown) * TRAVEL).toFixed(2)}px)`
+  bar.style.width = (shown * 100).toFixed(1) + '%'
+  const camZ = ease(shown) * TRAVEL
+  for (const book of books) {
+    /* 远处按雾化淡入，贴近镜头才快速淡出；中间整段保持全亮，否则还没看清就没了 */
+    const dz = book.z - camZ
+    const near = Math.min(1, Math.max(0, dz / 130))
+    const far = Math.min(1, Math.max(0, (3400 - dz) / 700))
+    book.el.style.opacity = (near * far).toFixed(3)
+    book.el.style.visibility = dz < 6 ? 'hidden' : 'visible'
+  }
+  frames += 1
+  if (now - fpsAt >= 500) {
+    readout.textContent = Math.round(frames * 1000 / (now - fpsAt)) + ' fps'
+    frames = 0
+    fpsAt = now
+  }
+}
+requestAnimationFrame(tick)
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171a1d">
+  <title>围桌 · 五人剧本杀</title>
+  <script>
+    // 模块脚本要等下载执行才会切端点，手机端会先闪出电脑主机端。这里在首帧前按 URL 与触摸能力先锁定启动视图。
+    (function () {
+      var params = new URLSearchParams(location.search)
+      var phoneEntry = params.get('phone') === '1'
+      var touchPhone = navigator.maxTouchPoints > 0 && matchMedia('(pointer: coarse)').matches
+      var root = document.documentElement
+      if (phoneEntry || touchPhone) {
+        root.dataset.bootView = 'player'
+        root.dataset.bootDevice = 'phone'
+        return
+      }
+      var endpoint = params.get('endpoint') || 'computer'
+      if (['computer', 'host', 'player', 'test', 'owner', 'invited', 'overview'].indexOf(endpoint) === -1) endpoint = 'computer'
+      root.dataset.bootView = endpoint
+    })()
+  </script>
+  <link rel="stylesheet" href="./style.css?v=20261126-join1">
+  <link rel="stylesheet" href="./entry-cinema.css?v=20261125-preview1">
+  <link rel="stylesheet" href="./cw-atmos.css?v=20261125-splash4">
+  <style>
+    /* 启动首帧样式：只挂在 html[data-boot-view][data-boot-device] 上，app.js 首次渲染后的下一帧会移除这两个属性。 */
+    html[data-boot-view="player"][data-boot-device="phone"] body { background: #0c0b09; }
+    html[data-boot-view="player"][data-boot-device="phone"] .topbar,
+    html[data-boot-view="player"][data-boot-device="phone"] .endpoint-tabs,
+    html[data-boot-view="player"][data-boot-device="phone"] .header-tools,
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-computer,
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-host,
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-test,
+    html[data-boot-view="player"][data-boot-device="phone"] #player-director,
+    html[data-boot-view="player"][data-boot-device="phone"] #clue-notice,
+    html[data-boot-view="player"][data-boot-device="phone"] .player-scene-entry,
+    html[data-boot-view="player"][data-boot-device="phone"] #phone-tabs { display: none !important; }
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-player { display: block !important; }
+    html[data-boot-view="player"][data-boot-device="phone"] .layout { max-width: none !important; padding: 0 !important; }
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-player .player-column { width: 100% !important; max-width: none !important; margin: 0 !important; }
+    html[data-boot-view="player"][data-boot-device="phone"] #endpoint-player .phone { width: 100% !important; max-width: none !important; height: 100dvh !important; min-height: 0 !important; border: 0 !important; border-radius: 0 !important; }
+    html[data-boot-view="player"][data-boot-device="phone"] .phone-boot { height: 100%; min-height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #0c0b09; color: #c8a35c; }
+    html[data-boot-view="player"][data-boot-device="phone"] .phone-boot span { font-size: 24px; letter-spacing: 8px; text-indent: 8px; }
+    html[data-boot-view="player"][data-boot-device="phone"] .phone-boot small { color: #8d8478; font-size: 12px; letter-spacing: 2px; }
+  </style>
+  <!-- boot-fixed -->
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left"><a class="brand" href="./"><span class="brand-mark">围</span><strong>围桌</strong><span class="brand-caption">五个人，一场故事。</span></a><button class="refresh-button" type="button" data-action="reload-page" aria-label="刷新页面，载入最新改动" title="刷新页面">↻ 刷新</button></div>
+    <nav class="endpoint-tabs" aria-label="设备页面预览"><button data-endpoint="computer" aria-pressed="true">电脑主机端</button><button data-endpoint="host" aria-pressed="false">主持端</button><button data-endpoint="owner" aria-pressed="false">房主玩家</button><button data-endpoint="invited" aria-pressed="false">受邀玩家</button><button data-endpoint="overview" aria-pressed="false">多画面画布</button></nav>
+    <div class="header-tools"><a class="quiet" href="./创意预览/index.html" target="_blank" rel="noopener" title="按游戏流程查看画面、对比方案与记录选择">画面预览</a><span class="prototype-label">本机交互原型</span><button id="demo-toggle" class="quiet" aria-expanded="false" aria-controls="demo-panel">演示工具</button></div>
+  </header>
+  <main class="layout">
+
+    <section id="endpoint-computer" class="endpoint-page" aria-label="电脑主机端">
+      <section id="computer-welcome" class="computer-welcome">
+        <div class="cwa" aria-hidden="true"><div class="cwa-stage">
+          <div class="cws s-rainy on">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="lampray"></div><div class="redlamp"></div>
+              <div class="rain" data-rain="76"></div>
+              <div class="splashes" data-splash="24"></div>
+              <div class="dust" data-dust="18"></div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+          <div class="cws s-fog">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="sconce l"></div><div class="sconce r"></div>
+              <div class="winflick left"></div><div class="winflick arch"></div>
+              <div class="ray l"></div><div class="ray r"></div><div class="harbor"></div>
+              <div class="fogs">
+                <i style="left:-10%;top:24%;width:70%;height:190px;background:rgba(150,182,188,.34);animation:fogDrift 27s ease-in-out infinite"></i>
+                <i style="left:32%;top:40%;width:78%;height:180px;background:rgba(122,152,162,.28);animation:fogDrift 35s ease-in-out -9s infinite"></i>
+                <i style="left:56%;top:20%;width:62%;height:160px;background:rgba(176,200,200,.22);animation:fogDrift 45s ease-in-out -18s infinite"></i>
+              </div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+          <div class="cws s-lamp">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="win a"></div>
+              <div class="dust" data-dust="24"></div>
+              <div class="outage"></div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+          <div class="cws s-bride">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="lanternglow"></div><div class="lampfall"></div><div class="silk"></div>
+              <div class="fogs"><i style="left:0;top:48%;width:86%;height:220px;background:rgba(126,156,156,.3);animation:fogDrift 42s ease-in-out infinite"></i></div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+          <div class="cws s-summer">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="shaft"></div><div class="curtainwave"></div>
+              <div class="dust" data-dust="32"></div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+          <div class="cws s-rings">
+            <div class="photo"></div><div class="grade"></div>
+            <div class="fx">
+              <div class="bandsweep"></div>
+              <div class="dust" data-dust="16"></div>
+            </div>
+            <div class="vig"></div><div class="grain"></div>
+          </div>
+        </div></div>
+        <div class="cwu">
+          <div class="cwu-mast"><b>围 桌</b><i>线下五人剧场</i></div>
+          <div class="cwu-live"><em aria-hidden="true"></em><span>尚未开场 · 等第一位玩家扫码</span></div>
+          <div class="cwu-copy">
+            <div class="cwu-num" id="cwuNum">第 〇 幕 · 入 席</div>
+            <h1 id="cwuTitle">雨夜旧馆</h1>
+            <div class="cwu-line" aria-hidden="true"></div>
+            <p id="cwuLead">暴雨封路，五名故人受邀回到即将拆除的旧照相馆。晚宴前，邀请人死在暗房里。一张尚未冲洗完成的底片，把众人重新牵回十年前的一次失踪案。</p>
+            <ul class="cwu-tags" id="cwuTags"><li>5 人本</li><li>悬疑</li><li>旧案还原</li></ul>
+          </div>
+          <aside class="cwu-entry">
+            <button type="button" class="tk" id="entryTicket" data-t="rainy" aria-label="点开大二维码">
+              <span class="tk-orn" aria-hidden="true"></span>
+              <span class="tk-qr"><img class="lan-qr" src="/api/qr?kind=entry" alt="扫码入席"></span>
+              <span class="tk-txt">
+                <b class="tk-cta">扫 码 入 席</b>
+                <i class="tk-sub" id="tkSub">雨夜旧馆 · 房间码 待创建</i>
+                <em class="tk-more">点 开 放 大</em>
+              </span>
+            </button>
+            <div id="computer-room-list" class="board-room-list" hidden></div>
+            <div id="computer-room-card" class="board-room" hidden></div>
+          </aside>
+          <div id="computer-catalog" hidden></div>
+        </div>
+      </section><div id="computer-stage-mount">
+      <section class="theatre" aria-label="电脑公共舞台">
+        <div class="stage-top"><div><span id="stage-screen-label" class="eyebrow">公共舞台</span><h1 id="stage-title">等候入席</h1></div><div class="stage-top-status"><span id="stage-room-chip" class="stage-room-chip" hidden></span><span id="stage-state" class="stage-state">尚未开场</span></div></div>
+        <div id="stage-canvas"><div id="graphics-status" role="status">正在布置舞台…</div></div>
+        <aside class="computer-periphery" aria-label="电脑舞台信息面板">
+          <section id="computer-room" class="computer-room"></section>
+          <section id="computer-public" class="public-dashboard"></section>
+          <details class="host-panel computer-events-panel"><summary>电脑调试记录</summary><div id="computer-events"></div></details>
+        </aside>
+        <div class="stage-dock stage-dock-top stage-dock-open" aria-label="舞台顶部控制">
+          <div class="stage-dock-tools">
+            <button class="icon-button" data-view="orientation" type="button" aria-label="横屏入席" data-tip="横屏入席">↔</button>
+            <button class="icon-button" data-action="toggle-fullscreen" type="button" aria-label="全屏" data-tip="全屏">⛶</button>
+            <button data-action="music-toggle" class="icon-button" aria-label="播放音乐" data-tip="播放 / 停止背景音乐" aria-pressed="false">♫</button>
+            <button class="stage-music-rate" type="button" data-action="cycle-music-rate" aria-label="音乐倍速，当前 0.9 倍" data-tip="音乐倍速">0.9×</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="invite" type="button" aria-label="扫码进入房间" data-tip="扫码进入房间">▦</button>
+          </div>
+        </div>
+        <div class="stage-dock stage-dock-bottom stage-dock-open" aria-label="舞台底部功能">
+          <div class="stage-dock-tools">
+            <button class="icon-button" data-view="first" type="button" aria-label="第一人称" data-tip="第一人称" hidden>◉</button>
+            <button class="icon-button" data-view="god" type="button" aria-label="上帝视角" data-tip="上帝视角" hidden>⊙</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="operation" type="button" aria-label="本轮操作" data-tip="本轮操作">◉</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="role" type="button" aria-label="角色卡" data-tip="角色卡">▤</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="clues" type="button" aria-label="线索资料" data-tip="线索资料">⌕</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="summary" type="button" aria-label="阶段总结" data-tip="阶段总结">≡</button>
+            <button class="icon-button stage-panel-button" data-stage-panel="public" type="button" aria-label="全桌信息" data-tip="全桌信息">◎</button>
+          </div>
+        </div>
+        <section class="stage-drawer" hidden aria-label="舞台功能面板">
+          <header><strong id="stage-drawer-title">本轮操作</strong><button class="icon-button stage-drawer-close" type="button" aria-label="关闭面板">×</button></header>
+          <div class="stage-drawer-content"></div>
+        </section>
+        <div class="view-controls" aria-label="舞台视角">
+          <button id="reset-view" class="small">视角复位</button>
+          <div class="stage-tools"><label class="music-rate-control">速度 <select id="music-rate" class="music-rate-select"><option value="0.8">0.8×</option><option value="0.85">0.85×</option><option value="0.9" selected>0.9×</option><option value="0.95">0.95×</option><option value="1">1.0×</option></select></label></div>
+        </div>
+        <button id="exit-immersive" hidden>退出沉浸</button>
+        <!-- flow-ui-20261120 -->
+        <div id="stage-queue" class="stage-queue" hidden></div>
+        <div class="stage-bottom"><div class="director-message"><span id="director-label">幕后主持</span><p id="stage-caption"></p></div></div>
+        <div id="public-overlay" class="public-overlay" hidden></div>
+      </section>
+      </div>
+    </section>
+    <section id="endpoint-host" class="endpoint-page host-workspace" aria-label="主持端" hidden>
+      <aside class="journey"><h2>这一场故事</h2><nav id="journey"></nav><div class="journey-bottom"><span class="live-dot"></span>五人木偶剧场<p>案件与身份均为测试占位。</p></div></aside>
+      <div class="host-main"><header class="host-page-heading"><div><span id="host-mode-label">AI 主持</span><h1 id="host-phase">等候开场</h1></div><div class="host-heading-tools"><button data-action="music-toggle" class="icon-button" aria-label="播放音乐" aria-pressed="false">♫</button><button data-action="music-library" class="music-library-button">曲库</button><button class="stage-music-rate" type="button" data-action="cycle-music-rate" aria-label="音乐倍速，当前 0.9 倍" title="音乐倍速">0.9×</button><button data-action="settings-placeholder" class="icon-button" aria-label="设置" title="设置" onclick="document.dispatchEvent(new CustomEvent('weizhuo:settings'))">⚙</button><span id="host-running"></span></div></header>
+        <section class="host-panel"><div class="section-heading"><h2 id="host-controls-title">自动主持</h2><span id="host-next-condition"></span></div><div id="host-body"></div></section>
+        <section class="host-panel"><div class="section-heading"><h2>全桌进度</h2><span>公开操作状态</span></div><div id="host-progress"></div></section>
+        <section class="host-panel"><div class="section-heading"><h2>主持解释记录</h2></div><div id="host-public-messages"></div></section>
+        <section class="host-panel service-panel"><h2>主机服务</h2><div id="host-services"></div></section>
+      </div>
+    </section>
+    <section id="endpoint-player" class="endpoint-page" aria-label="玩家端" hidden>
+      <div id="player-personal" class="player-column"><section class="phone" aria-label="玩家手机实时画面">
+        <div class="phone-header"><h2 id="phone-name">围桌</h2><div class="phone-heading-tools"><div id="phone-room-code" class="phone-room-code" hidden></div><button data-action="music-toggle" class="icon-button" aria-label="播放音乐" aria-pressed="false">♫</button><button data-action="toggle-fullscreen" class="icon-button" aria-label="全屏" title="全屏">⛶</button><button data-action="settings-placeholder" class="icon-button" aria-label="设置" title="设置" onclick="document.dispatchEvent(new CustomEvent('weizhuo:settings'))">⚙</button><span id="phone-phase" hidden></span><span id="phone-connection" role="status" hidden></span><span id="phone-role-label" hidden></span></div></div>
+        <div id="player-director" class="player-director"></div>
+        <div id="player-scene" hidden><div id="player-stage-mount"></div></div>
+        <div id="clue-notice" class="clue-notice"></div>
+        <div id="phone-body" class="phone-body"><div class="phone-boot" aria-hidden="true"><span>围桌</span><small>正在进入…</small></div></div>
+        <div class="player-scene-entry"><button id="enter-player-scene">进入竖屏入席</button><button id="leave-player-scene" hidden>回到全桌视角</button><span id="player-scene-name" hidden></span><select id="quality" hidden aria-hidden="true"><option value="high">高画质</option><option value="eco">省电</option></select></div>
+        <nav id="phone-tabs" class="phone-tabs"></nav>
+      </section></div>
+
+    </section>
+    <section id="endpoint-test" class="endpoint-page" aria-label="双玩家测试" hidden>
+      <div class="test-heading"><div><h1>双玩家流程测试</h1><p>两个独立设备身份，共用一个测试房间。</p></div><button id="reset-test-room">重置测试房间</button></div>
+      <div id="player-test-workspace" class="player-test-workspace"></div>
+    </section>
+    <section id="endpoint-owner" class="endpoint-page debug-single" aria-label="房主玩家视角" hidden>
+      <div class="debug-single-heading">
+        <div><h1>房主玩家视角</h1><p>独立调试身份 · 在手机画面里选本、建房、选角。</p></div>
+        <span id="owner-target-label" class="debug-target">测试房间待创建</span>
+      </div>
+      <div class="debug-single-phone">
+        <iframe id="owner-view-frame" title="房主玩家视角" data-src="?endpoint=player&testDevice=owner&embed=1&v=20261124-audio7" allow="autoplay; fullscreen; screen-orientation"></iframe>
+        <div class="debug-frame-loading" data-frame-loading="owner-view-frame">正在载入房主画面…</div>
+        <div class="debug-frame-state" data-frame-state="owner-view-frame" hidden>
+          <span>画面没有载入</span>
+          <button type="button" data-frame-retry="owner-view-frame">重新载入</button>
+        </div>
+      </div>
+    </section>
+    <section id="endpoint-invited" class="endpoint-page debug-single" aria-label="受邀玩家视角" hidden>
+      <div class="debug-single-heading">
+        <div><h1>受邀玩家视角</h1><p>独立调试身份 · 必须手动输入房间码才能加入。</p></div>
+        <span id="invited-target-label" class="debug-target">测试房间待创建</span>
+      </div>
+      <div class="debug-single-phone">
+        <iframe id="invited-view-frame" title="受邀玩家视角" data-src="?endpoint=player&testDevice=invited&embed=1&v=20261124-audio7" allow="autoplay; fullscreen; screen-orientation"></iframe>
+        <div class="debug-frame-loading" data-frame-loading="invited-view-frame">正在载入受邀画面…</div>
+        <div class="debug-frame-state" data-frame-state="invited-view-frame" hidden>
+          <span>画面没有载入</span>
+          <button type="button" data-frame-retry="invited-view-frame">重新载入</button>
+        </div>
+      </div>
+    </section>
+    <section id="endpoint-overview" class="endpoint-page canvas-page" aria-label="多画面画布" hidden>
+      <aside class="canvas-rail" aria-label="画面列表">
+        <header class="canvas-rail-head"><strong>画面</strong><small>点击定位</small></header>
+        <div id="canvas-rail-list" class="canvas-rail-list"></div>
+        <footer class="canvas-rail-foot">画布只读，画面内部不可操作。拖动标题栏移动画面，拖动右下角保持比例改大小。四个画面镜像同一场真实房间；顶部单页入口仍按各自房间打开。旧版双玩家测试在 <a href="?endpoint=test">?endpoint=test</a>。</footer>
+      </aside>
+      <div class="canvas-viewport" id="canvas-viewport">
+        <div class="canvas-toolbar">
+          <span id="canvas-room-label" class="canvas-room-label">暂无房间</span>
+          <button id="canvas-fit" type="button">适应全部</button>
+          <button id="canvas-reset-layout" type="button">重置布局</button>
+          <button id="canvas-reload" type="button">重载画面</button>
+          <span class="canvas-zoom"><button id="canvas-zoom-out" type="button" aria-label="缩小画布">−</button><span id="canvas-zoom-label">100%</span><button id="canvas-zoom-in" type="button" aria-label="放大画布">+</button></span>
+        </div>
+        <div class="canvas-world" id="canvas-world"></div>
+        <p class="canvas-hint">空白处拖动/双指拖动平移 · 双指捏合或 Ctrl+滚轮缩放 · 拖标题栏移动 · 双击标题栏放大 · 右下角等比缩放</p>
+      </div>
+    </section>
+  </main>
+  <aside id="demo-panel" class="demo-panel" aria-label="演示工具" hidden><!-- animation-lab-20261121 --><div class="section-heading"><h2>演示工具</h2><button id="demo-close" class="quiet small">收起</button></div><p>局域网联机已接通。下方快捷操作仅供电脑本机调试，案件内容与 AI 回复仍为占位。</p><section class="demo-group demo-stage-group"><button class="demo-group-head" type="button" aria-expanded="false">三镜演示 · 电脑 → 扫码 → 房主建房</button><div class="demo-group-body" hidden><p class="demo-group-hint">按顺序点，画布自动编排画面。镜头 2 的房主与对照会重播入场，镜头 3 房主停在选本后的详情页。</p><div class="actions demo-stage-actions"><button type="button" data-demo-stage="1">镜头 1 · 首屏轮播</button><button type="button" data-demo-stage="2">镜头 2 · 扫码入场</button><button type="button" data-demo-stage="3">镜头 3 · 房主建房</button><button type="button" data-demo-stage="0">退出演示</button></div></div></section><section class="demo-group demo-flow-group"><button class="demo-group-head" type="button" aria-expanded="false">全流程线性图 · 点节点演到那一步</button><div class="demo-group-body" hidden><ol id="flow-map" class="flow-map"></ol><div class="flow-map-bar"><button id="run-full-flow" class="primary" type="button">从头跑一遍</button><span id="full-flow-status" class="prototype-label"></span></div></div></section><section class="demo-group demo-group-open"><button class="demo-group-head" type="button" aria-expanded="true">流程推进</button><div class="demo-group-body test-flow-helper"><p class="demo-group-hint">当前阶段操作；两侧完成本人的操作后，可用下方按钮补齐全桌状态。</p><div id="demo-actions" class="actions"></div><div class="actions"><button data-test-action="fill-roles">补齐其他玩家入席</button><button data-test-action="fill-ready">全员准备完成</button><button data-test-action="fill-consent">补齐录音意愿</button><button data-test-action="fill-intro">全员介绍完成</button><button data-test-action="skip-countdown">跳过收尾计时</button><button data-test-action="fill-confirm">全员结束确认</button><button data-test-action="fill-read">全员线索已读</button><button data-test-action="fill-votes" data-test-value="normal">补齐投票</button><button data-test-action="fill-votes" data-test-value="tie">补齐平票测试</button><button data-test-action="fill-votes" data-test-value="abstain">补齐全员弃票</button><button type="button" data-test-action="create">房主重建房间</button><button type="button" data-test-action="advance" class="primary">推进到下一阶段</button><button type="button" data-test-reset>重置测试房间</button></div></div></section><section class="demo-group"><button class="demo-group-head" type="button" aria-expanded="false">设备与身份</button><div class="demo-group-body" hidden><div id="demo-current-room"><h3>模拟玩家设备</h3><div id="player-switch" class="player-switch"></div><label id="seat-control" hidden>观察座位 <select id="view-seat" aria-label="第一人称观察座位"><option value="0">沈知夏</option><option value="1">周启明</option><option value="2">林素琴</option><option value="3">许承安</option><option value="4">何映秋</option></select></label><div class="actions"><button id="leave-room-admin" class="quiet" hidden>退出房间，重新选本</button><button id="reset" class="quiet">重新开始</button></div></div></div></section><section class="demo-group"><button class="demo-group-head" type="button" aria-expanded="false">舞台调试</button><div class="demo-group-body" hidden><label class="demo-slider" for="table-size"><span>桌子大小</span><input id="table-size" type="range" min="0.75" max="1.35" step="0.01" value="1" aria-label="调整桌子大小"><output id="table-size-value" for="table-size">100%</output></label><p class="demo-slider-hint">只调整桌面半径；五席按桌边固定间隙外移或内收。</p><label class="demo-slider" for="chair-size"><span>椅子大小</span><input id="chair-size" type="range" min="0.75" max="1.35" step="0.01" value="1" aria-label="调整椅子大小"><output id="chair-size-value" for="chair-size">100%</output></label><p class="demo-slider-hint">椅子与坐着的木偶一起缩放，席位随椅子深度外移。</p><label class="demo-slider" for="floor-height"><span>地板高度</span><input id="floor-height" type="range" min="-1.2" max="1.2" step="0.1" value="0" aria-label="调整地板高度"><output id="floor-height-value" for="floor-height">0.0</output></label><p class="demo-slider-hint">正值上移，负值下移；仅影响竖屏俯视构图。</p><label class="demo-slider" for="cwu-bright"><span>首屏亮度</span><input id="cwu-bright" type="range" min="0.5" max="1.8" step="0.01" value="1" aria-label="调整电脑首屏亮度"><output id="cwu-bright-value" for="cwu-bright">100%</output></label><p class="demo-slider-hint">只作用于电脑主机端未扫码前的剧照氛围层，数值会被记住。</p><div id="demo-visual-lab"><h3>动画实验室</h3><p>盘点现有舞台动画并逐项试播；只改本机视觉，不改房间阶段、计时、队列与投票。</p><button id="lab-open" class="primary" type="button">打开动画实验室</button></div></div></section><section class="demo-group"><button class="demo-group-head" type="button" aria-expanded="false">诊断信息</button><div class="demo-group-body" hidden><p id="demo-target"></p><details class="coverage"><summary>原型范围与文字对比度</summary><p>房间状态由电脑保存，多设备实时同步，刷新自动恢复身份。三种相机在玩家端使用。录音、识别和真实 AI 尚未接入。</p><p id="contrast"></p></details></div></section></aside>
+  <aside id="lab-panel" class="lab-panel" aria-label="舞台动画实验室" hidden></aside>
+  <dialog id="settings-dialog" class="music-library-dialog"><div class="section-heading"><h2>设置</h2><button type="button" data-action="close-settings" class="quiet small">关闭</button></div><div id="settings-dialog-content"></div></dialog><dialog id="music-library-dialog" class="music-library-dialog"><div class="music-library-heading"><h2>音乐曲库 · 19 首</h2><button data-action="close-music-library" class="icon-button" aria-label="关闭曲库">×</button></div><p class="music-current-plan">等候入席循环：O Come O Come Emmanuel → the grotto → old doll</p><div id="music-library-content"></div></dialog>
+  <dialog id="app-dialog" class="app-dialog" aria-labelledby="app-dialog-text">
+    <p id="app-dialog-text"></p>
+    <input id="app-dialog-input" type="text" hidden>
+    <div class="app-dialog-actions"><button type="button" data-dialog="cancel">取消</button><button type="button" data-dialog="ok" class="primary">确定</button></div>
+  </dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+  <div class="tk-modal" id="tkModal" hidden>
+    <div class="tk-card" role="dialog" aria-modal="true" aria-label="扫码入席">
+      <button type="button" class="tk-x" id="tkClose" aria-label="关闭">×</button>
+      <em class="tk-seal" id="tkSeal2">雨夜旧馆</em>
+      <h3>入 席</h3>
+      <p class="tk-sub2" id="tkSub2">雨夜旧馆 · 房间码 待创建</p>
+      <div class="tk-big"><img src="/api/qr?kind=entry" alt="扫码入席"></div>
+      <div class="tk-code" id="tkCode">扫码进入</div>
+      <p class="tk-cap">同一 WiFi 下扫码，或手机浏览器打开 <a href="/play">/play</a></p>
+    </div>
+  </div>
+  <script type="module" src="./app.js?v=20261126-mood8"></script>
+  <script type="module" src="./cw-atmos.js?v=20261125-splash3"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
